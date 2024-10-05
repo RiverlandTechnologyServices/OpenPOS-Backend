@@ -7,7 +7,25 @@
 
 namespace OpenPOS\Models;
 
-class SessionTokensModel
+use OpenPOS\Models\BaseModelInterface;
+
+class SessionTokensModel extends BaseDatabaseModel implements BaseModelInterface
 {
 
+    protected array $sessionTokens = [];
+
+    public function __construct(string $userID)
+    {
+        parent::__construct();
+
+        $results = $this->execute("SELECT id active, timeCreated FROM session_tokens WHERE userID = ?", [$userID]);
+        foreach ($results as $result) {
+            $this->sessionTokens[] = new SessionTokenModel($result);
+        }
+    }
+
+    public function toArray(): array
+    {
+        return $this->sessionTokens;
+    }
 }

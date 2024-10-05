@@ -1,49 +1,72 @@
 <?php
 /**
- *  Basic Controller Class
+ *  Basic Controller Functionality
  * @name BaseController.php
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
+namespace OpenPOS\Controllers;
 
 require_once __DIR__ . "/../common/bootstrap.inc.php";
 
-class BaseController
+interface BaseControllerInterface
 {
+    public function __call($name, $arguments);
+    public function get(string $uri);
+    public function post(string $uri);
+    public function put(string $uri);
+    public function delete(string $uri);
+    public function patch(string $uri);
+    public function head(string $uri);
+    public function options(string $uri);
+}
+
+/**
+ * Basic Controller Class
+ */
+class BaseController implements BaseControllerInterface
+{
+    protected string $uri;
+
+
     public function __call($name, $arguments)
     {
         // TODO: Implement __call() method.
     }
 
-    protected function getURL()
+    public function get(string $uri)
     {
-        return $_SERVER["REQUEST_URI"];
+        $this->uri = $uri;
     }
 
-    protected function getPath()
+    public function post(string $uri)
     {
-        return parse_url($this->getURL(), PHP_URL_PATH);
+        $this->uri = $uri;
     }
 
-    protected function getURLSegments()
+    public function put(string $uri)
     {
-        return explode("/", $this->getPath());
+        $this->uri = $uri;
     }
 
-    protected function getMethod()
+    public function delete(string $uri)
     {
-        return $_SERVER["REQUEST_METHOD"];
+        $this->uri = $uri;
     }
 
-    protected function getRequestInput()
+    public function patch(string $uri)
     {
-        switch ($this->getMethod()) {
-            case "GET":
-                return $_GET;
-                break;
-            case "UPDATE":
-            case "POST":
-                json_decode(file_get_contents('php://input'));
-                break;
-        }
+        $this->uri = $uri;
     }
+
+    public function head(string $uri)
+    {
+        $this->uri = $uri;
+    }
+
+    public function options(string $uri)
+    {
+        $this->uri = $uri;
+    }
+
+
 }
