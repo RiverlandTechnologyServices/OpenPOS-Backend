@@ -12,9 +12,11 @@ use OpenPOS\Models\BaseModelInterface;
 
 class UsersModel extends BaseDatabaseModel implements BaseModelInterface
 {
-    public function __construct()
+    public function __construct(string $userName = "", string $organisationID = "", string $roleID = "", string $globalRoleID = "", bool $enabled = true, string $searchTerm = "")
     {
         parent::__construct();
+
+        $stmt = (new \SQLQuery())->select(["id"])->from("users")->where()->variableName("userName")->like("%")->variable($userName)->variable($searchTerm)->string("%")->or()->variableName("organisationID")->like("%")->variable($organisationID)->variable($searchTerm)->string("%")->or()->variableName("roleID")->like("%")->variable($roleID)->variable($searchTerm)->string("%");
 
         $this->execute("SELECT id FROM users ORDER BY id DESC LIMIT ?", [$max]);
     }

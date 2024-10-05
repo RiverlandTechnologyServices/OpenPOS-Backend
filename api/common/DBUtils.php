@@ -24,6 +24,12 @@ class SQLQuery
         return $this;
     }
 
+    public function from(string $table): SQLQuery
+    {
+        $this->stmt .= " FROM " . $table;
+        return $this;
+    }
+
     public function where(): SQLQuery
     {
         $this->stmt .= " WHERE";
@@ -78,10 +84,28 @@ class SQLQuery
         return $this;
     }
 
+    public function and(): SQLQuery
+    {
+        $this->stmt .= " AND";
+        return $this;
+    }
+
+    public function or(): SQLQuery
+    {
+        $this->stmt .= " OR";
+        return $this;
+    }
+
     public function variable($parameter): SQLQuery
     {
         $this->parameters[] = $parameter;
         $this->stmt .= "?";
+        return $this;
+    }
+
+    public function string(string $value): SQLQuery
+    {
+        $this->stmt .= " " . $value;
         return $this;
     }
 

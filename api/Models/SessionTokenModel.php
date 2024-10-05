@@ -17,13 +17,16 @@ class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
     protected bool $active;
     protected TimeModel $timeCreated;
 
-    public function __construct($data)
+    public function __construct($id)
     {
         parent::__construct();
 
-        $this->id = $data["id"];
-        $this->active = $data["active"];
-        $this->timeCreated = $data["timeCreated"];
+        $stmt = (new \SQLQuery())->select(["active", "timeCreated"])->from("sessionTokens")->where()->variableName("id")->equals()->variable($id);
+        $result = $this->execute($stmt)[0];
+
+        $this->id = $id;
+        $this->active = $result["active"];
+        $this->timeCreated = $result["timeCreated"];
     }
 
 
