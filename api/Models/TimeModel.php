@@ -9,7 +9,7 @@ namespace OpenPOS\Models;
 
 use OpenPOS\Models\BaseModelInterface;
 
-class TimeModel implements BaseModelInterface
+class TimeModel extends BaseModel implements BaseModelInterface
 {
 
     protected int $unixTimestamp;

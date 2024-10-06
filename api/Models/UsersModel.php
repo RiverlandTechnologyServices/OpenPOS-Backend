@@ -7,22 +7,45 @@
 
 namespace OpenPOS\Models;
 
+use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseDatabaseModel;
 use OpenPOS\Models\BaseModelInterface;
 
 class UsersModel extends BaseDatabaseModel implements BaseModelInterface
 {
+    protected array $users = [];
+    protected int $count = 0;
+
+    /**
+     * @param string $userName
+     * @param string $organisationID
+     * @param string $roleID
+     * @param string $globalRoleID
+     * @param bool $enabled
+     * @param string $searchTerm
+     * @throws OpenPOSException
+     */
     public function __construct(string $userName = "", string $organisationID = "", string $roleID = "", string $globalRoleID = "", bool $enabled = true, string $searchTerm = "")
     {
         parent::__construct();
 
-        $stmt = (new \SQLQuery())->select(["id"])->from("users")->where()->variableName("userName")->like("%")->variable($userName)->variable($searchTerm)->string("%")->or()->variableName("organisationID")->like("%")->variable($organisationID)->variable($searchTerm)->string("%")->or()->variableName("roleID")->like("%")->variable($roleID)->variable($searchTerm)->string("%");
+        $stmt = (new \SQLQuery())->select(["id"])->from("users")->where()->variableName("userName")->like("%")->variable($userName)->variable($searchTerm)->string("%")->or()->variableName("organisationID")->like("%")->variable($organisationID)->variable($searchTerm)->string("%")->or()->variableName("roleID")->like("%")->variable($roleID)->variable($searchTerm)->string("%")->or()->variableName("globalRoleID")->like("%")->variable($globalRoleID)->variable($searchTerm)->string("%")->or()->variableName("enabled")->equals()->variable($enabled);
 
-        $this->execute("SELECT id FROM users ORDER BY id DESC LIMIT ?", [$max]);
+        $results = $this->execute($stmt);
+        foreach ($results as $result) {
+            try {
+                $this->users[] = new UserSummaryModel($result["id"]);
+            } catch (OpenPOSException $e) {
+                throw new OpenPOSException("Empty ID returned from SQL query.", "UsersModel","empty_result", "internal_error");
+            }
+            $this->count++;
+        }
     }
 
     public function toArray(): array
     {
-        // TODO: Implement toArray() method.
+        return(array(
+            "users" => $this->users,
+        ));
     }
 }

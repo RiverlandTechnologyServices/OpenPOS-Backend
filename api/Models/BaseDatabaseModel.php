@@ -9,6 +9,7 @@ namespace OpenPOS\Models;
 
 use mysqli;
 use OpenPOS\Common\Logger;
+use OpenPOS\Common\OpenPOSException;
 
 abstract class BaseDatabaseModel extends BaseModel implements BaseModelInterface
 {
@@ -23,9 +24,9 @@ abstract class BaseDatabaseModel extends BaseModel implements BaseModelInterface
 
             if($this->connection->connect_errno)
             {
-                throw new \Exception("Failed to connect to MySQL: " . $this->connection->connect_error);
+                throw new OpenPOSException("Failed to connect to database", "BaseDatabaseModel", "db_connect_fail", "internal_error");
             }
-        } catch (\Exception $e) {
+        } catch (OpenPOSException $e) {
             Logger::error($e);
         }
     }
@@ -36,11 +37,11 @@ abstract class BaseDatabaseModel extends BaseModel implements BaseModelInterface
             $results = $this->connection->execute_query($stmt->getStmt(), $stmt->getParameters());
 
             if($this->connection->errno)
-                throw new \Exception("Failed to execute query: " . $this->connection->error);
+                throw new OpenPOSException("Failed to submit database query", "BaseDatabaseModel", "db_query_fail", "internal_error");
 
             return $results;
 
-        } catch (\Exception $e)
+        } catch (OpenPOSException $e)
         {
             Logger::error($e);
         }

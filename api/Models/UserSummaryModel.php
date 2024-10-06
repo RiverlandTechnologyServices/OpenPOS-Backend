@@ -1,7 +1,7 @@
 <?php
 /**
  *  $DESCRIPTION$ $END$
- * @name UserModel.php
+ * @name UserSummaryModel.php
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
@@ -10,48 +10,65 @@ namespace OpenPOS\Models;
 use OpenPOS\Common\Logger;
 use OpenPOS\Common\OpenPOSException;
 
-class UserModel extends BaseDatabaseModel implements BaseModelInterface
+class UserSummaryModel extends BaseDatabaseModel implements BaseModelInterface
 {
+
     /**
      * @var string
      */
     protected string $id;
+    public function getID(): string
+    {
+        return $this->id;
+    }
     /**
      * @var string
      */
     protected string $userName;
+    public function getUserName(): string
+    {
+        return $this->userName;
+    }
     /**
      * @var string
      */
     protected string $email;
-    /**
-     * @var string
-     */
-    protected string $password;
-    /**
-     * @var SessionTokensModel
-     */
-    protected SessionTokensModel $sessionTokens;
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
     /**
      * @var string
      */
     protected string $roleID;
+    public function getRoleID(): string
+    {
+        return $this->roleID;
+    }
     /**
      * @var string
      */
     protected string $globalRoleID;
+    public function getGlobalRoleID(): string
+    {
+        return $this->globalRoleID;
+    }
     /**
      * @var bool
      */
     protected bool $enabled;
-    /**
-     * @var UserSettingsModel
-     */
-    protected UserSettingsModel $userSettings;
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
     /**
      * @var string
      */
     protected string $organisationID;
+    public function getOrganisationID(): string
+    {
+        return $this->organisationID;
+    }
 
     /**
      * @param string $id
@@ -85,21 +102,10 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         $this->id = $data["id"];
         $this->userName = $data["userName"];
         $this->email = $data["email"];
-        $this->password = $data["password"];
-        $this->sessionTokens = new SessionTokensModel(json_decode($data["sessionTokens"]));
         $this->roleID = $data["roleID"];
         $this->globalRoleID = $data["globalRoleID"];
         $this->enabled = $data["enabled"];
-        $this->userSettings = new UserSettingsModel(json_decode($data["userSettings"]));
         $this->organisationID = $data["organisationID"];
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
     }
 
     /**
@@ -108,15 +114,13 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
     public function toArray(): array
     {
         return array(
-        "id" => $this->id,
-        "userName" => $this->userName,
-        "email" => $this->email,
-        "sessionTokens" => $this->sessionTokens->toArray(),
-        "roleID" => $this->roleID,
-        "globalRoleID" => $this->globalRoleID,
-        "enabled" => $this->enabled,
-        "userSettings" => $this->userSettings->toArray(),
-        "organisationID" => $this->organisationID,
+            "id" => $this->id,
+            "userName" => $this->userName,
+            "email" => $this->email,
+            "roleID" => $this->roleID,
+            "globalRoleID" => $this->globalRoleID,
+            "enabled" => $this->enabled,
+            "organisationID" => $this->organisationID,
         );
     }
 }

@@ -6,4 +6,6 @@
  */
 
 $router = new \OpenPOS\Common\Router();
-$router->Route();
+$router->RegisterRoute("/api/users", new \OpenPOS\Controllers\UsersController());
+$router->RegisterRoute("/api/user/{userID}", new \OpenPOS\Controllers\UsersController());
+$router->Route($_SERVER["REQUEST_URI"]);

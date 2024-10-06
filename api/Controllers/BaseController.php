@@ -6,18 +6,22 @@
  */
 namespace OpenPOS\Controllers;
 
+use OpenPOS\Common\Logger;
+use OpenPOS\Models\PermissionsModel;
+use OpenPOS\Models\UserSummaryModel;
+
 require_once __DIR__ . "/../common/bootstrap.inc.php";
 
 interface BaseControllerInterface
 {
     public function __call($name, $arguments);
-    public function get(string $uri);
-    public function post(string $uri);
-    public function put(string $uri);
-    public function delete(string $uri);
-    public function patch(string $uri);
-    public function head(string $uri);
-    public function options(string $uri);
+    public function get(array $args);
+    public function post(array $args);
+    public function put(array $args);
+    public function delete(array $args);
+    public function patch(array $args);
+    public function head(array $args);
+    public function options(array $args);
 }
 
 /**
@@ -25,7 +29,8 @@ interface BaseControllerInterface
  */
 class BaseController implements BaseControllerInterface
 {
-    protected string $uri;
+    protected string $sessionToken;
+    protected array $postBody;
 
 
     public function __call($name, $arguments)
@@ -33,40 +38,77 @@ class BaseController implements BaseControllerInterface
         // TODO: Implement __call() method.
     }
 
-    public function get(string $uri)
+    public function get(array $args): void
     {
-        $this->uri = $uri;
+        $sessionToken = $_GET['session_token'] ?? null;
+        $this->sessionToken = $sessionToken;
     }
 
-    public function post(string $uri)
+    public function post(array $args): void
     {
-        $this->uri = $uri;
+        $this->postBody = json_decode(file_get_contents('php://input'), true);
+        $sessionToken = $this->postBody['session_token'] ?? null;
+        $this->sessionToken = $sessionToken;
     }
 
-    public function put(string $uri)
+    public function put(array $args): void
     {
-        $this->uri = $uri;
+        $this->postBody = json_decode(file_get_contents('php://input'), true);
+        $sessionToken = $this->postBody['session_token'] ?? null;
+        $this->sessionToken = $sessionToken;
     }
 
-    public function delete(string $uri)
+    public function delete(array $args): void
     {
-        $this->uri = $uri;
+        $this->postBody = json_decode(file_get_contents('php://input'), true);
+        $sessionToken = $this->postBody['session_token'] ?? null;
+        $this->sessionToken = $sessionToken;
     }
 
-    public function patch(string $uri)
+    public function patch(array $args): void
     {
-        $this->uri = $uri;
+        $this->postBody = json_decode(file_get_contents('php://input'), true);
+        $sessionToken = $this->postBody['session_token'] ?? null;
+        $this->sessionToken = $sessionToken;
     }
 
-    public function head(string $uri)
+    public final function head(array $args): void
     {
-        $this->uri = $uri;
+        $this->get($args);
     }
 
-    public function options(string $uri)
+    public function options(array $args): void
     {
-        $this->uri = $uri;
+        $sessionToken = $_GET['session_token'] ?? null;
+        $this->sessionToken = $sessionToken;
     }
 
+    protected function success(array $data): void
+    {
+        echo json_encode(array(
+            "success" => true,
+            "data" => $data
+        ));
+    }
 
+    protected function error(string $errorCode): void
+    {
+        echo json_encode(array(
+            "success" => false,
+            "errorCode" => $errorCode
+        ));
+    }
+
+    protected function getPermissions(string $sessionToken): ?PermissionsModel
+    {
+        try
+        {
+            $user = new UserSummaryModel("", "", $sessionToken);
+            return new PermissionsModel($user->getRoleID());
+        } catch (\Exception $e)
+        {
+            Logger::error($e);
+        }
+        return null;
+    }
 }

@@ -23,10 +23,10 @@ class Logger
 
     /**
      * Logs an error to logging backend
-     * @param string|\Exception $message
+     * @param string|OpenPOSException $message
      * @return void
      */
-    public static function error (string|\Exception $message)
+    public static function error (string|OpenPOSException $message)
     {
 
     }
