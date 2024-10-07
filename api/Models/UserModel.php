@@ -65,18 +65,6 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         return $this->password;
     }
     /**
-     * @var SessionTokensModel
-     */
-    protected SessionTokensModel $sessionTokens;
-
-    /**
-     * @return SessionTokensModel
-     */
-    public function getSessionTokens(): SessionTokensModel
-    {
-        return $this->sessionTokens;
-    }
-    /**
      * @var string
      */
     protected string $roleID;
@@ -158,7 +146,6 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         if($id)
         {
             $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
-
         }
         else if($email)
         {
@@ -166,7 +153,8 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         }
         else if($sessionToken)
         {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("sessionToken")->equals()->variable($sessionToken);
+            $sessionTokenObject = SessionTokenModel::Find("", $sessionToken);
+            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($sessionTokenObject->getUserID());
         }
         else
         {
@@ -174,18 +162,24 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         }
 
         //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
-        $data = \DatabaseManager::getInstance()->execute($stmt)[0];
-        $requestedUser->id = $data["id"];
-        $requestedUser->userName = $data["userName"];
-        $requestedUser->email = $data["email"];
-        $requestedUser->password = $data["password"];
-        $requestedUser->sessionTokens = SessionTokensModel::Find($data["id"]);
-        $requestedUser->roleID = $data["roleID"];
-        $requestedUser->globalRoleID = $data["globalRoleID"];
-        $requestedUser->enabled = $data["enabled"];
-        $requestedUser->userSettings = UserSettingsModel::Find($data["id"]);
-        $requestedUser->organisationID = $data["organisationID"];
-        return $requestedUser;
+
+        if($data = \DatabaseManager::getInstance()->execute($stmt)[0])
+        {
+            $requestedUser->id = $data["id"];
+            $requestedUser->userName = $data["userName"];
+            $requestedUser->email = $data["email"];
+            $requestedUser->password = $data["password"];
+            $requestedUser->roleID = $data["roleID"];
+            $requestedUser->globalRoleID = $data["globalRoleID"];
+            $requestedUser->enabled = $data["enabled"];
+            $requestedUser->userSettings = UserSettingsModel::Find($data["id"]);
+            $requestedUser->organisationID = $data["organisationID"];
+            return $requestedUser;
+        }
+        else
+        {
+            throw new OpenPOSException("No user with ID, Email, or SessionToken found", "UserModel", "no_user", "no_user");
+        }
     }
 
     /**
@@ -198,7 +192,7 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("Failed to provide UserName, Email, Password, OrganisationID, RoleID, or GlobalRoleID", "UserModel", "insufficient_inputs", "insufficient_inputs");
         }
 
-        $stmt = (new \SQLQuery())->insertInto("users", ["userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"], [$userName, $email, password_hash($password, PASSWORD_DEFAULT), SessionTokensModel::Create()->toJson(), $roleID, $globalRoleID, $enabled, UserSettingsModel::Create()->toJson(), $organisationID]);
+        $stmt = (new \SQLQuery())->insertInto("users", ["userName", "email", "password", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"], [$userName, $email, password_hash($password, PASSWORD_DEFAULT), $roleID, $globalRoleID, $enabled, UserSettingsModel::Create()->toJson(), $organisationID]);
         $result = \DatabaseManager::getInstance()->execute($stmt);
         if(!$result)
         {
@@ -217,7 +211,6 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
             "id" => $this->id,
             "userName" => $this->userName,
             "email" => $this->email,
-            "sessionTokens" => $this->sessionTokens->toArray(),
             "roleID" => $this->roleID,
             "globalRoleID" => $this->globalRoleID,
             "enabled" => $this->enabled,

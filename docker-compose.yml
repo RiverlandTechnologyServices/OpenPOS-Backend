@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  db:
+    networks:
+      - openpos
+    image: mariadb:${MARIADB_VERSION}
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: 
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+
+  web-server:
+    build:
+      dockerfile: server.Dockerfile
+      context: .
+    restart: always
+    networks:
+      - proxy
+      - openpos
+    volumes:
+      - "./api/:/var/www/html/"
+      - "./site/:/etc/apache2/sites-available/"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.openpos-backend.entryPoints=${TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.openpos-backend.rule=Host("${WEB_URL}", "www.${WEB_URL}")
+      - traefik.http.routers.openpos-backend.tls=true
+      - traefik.http.routers.openpos-backend.tls.certresolver=${TRAEFIK_CERTRESOLVER}
+      - traefik.http.services.openpos-backend.loadbalancer.server.port=80
+
+networks:
+  proxy:
+    external: true
+  openpos:
