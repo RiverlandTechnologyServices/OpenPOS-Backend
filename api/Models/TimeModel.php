@@ -7,6 +7,7 @@
 
 namespace OpenPOS\Models;
 
+use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseModelInterface;
 
 class TimeModel extends BaseModel implements BaseModelInterface
@@ -19,15 +20,24 @@ class TimeModel extends BaseModel implements BaseModelInterface
         $this->unixTimestamp = $unixTimestamp;
     }
 
-    public function getUnixTimestamp()
+    public function getUnixTimestamp(): int
     {
         return $this->unixTimestamp;
     }
 
-    public function toString(string $timezone = null)
+    /**
+     * @throws OpenPOSException
+     */
+    public function toString(string $timezone = null): string
     {
         $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone($timezone));
+        try
+        {
+            $date->setTimezone(new \DateTimeZone($timezone));
+        } catch (\DateInvalidTimeZoneException $e) {
+            throw new OpenPOSException($e->getMessage(), "TimeModel", "invalid_timezone", "invalid_timezone");
+        }
+        $date->setTimestamp($this->unixTimestamp);
         return $date->format('d-m-Y H:i:s');
     }
 

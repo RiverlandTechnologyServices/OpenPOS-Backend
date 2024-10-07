@@ -7,61 +7,154 @@
 
 namespace OpenPOS\Models;
 
+use http\Client\Curl\User;
 use OpenPOS\Common\Logger;
 use OpenPOS\Common\OpenPOSException;
 
+/**
+ *
+ */
 class UserModel extends BaseDatabaseModel implements BaseModelInterface
 {
     /**
      * @var string
      */
     protected string $id;
+
+    /**
+     * @return string
+     */
+    public function getID(): string
+    {
+        return $this->id;
+    }
     /**
      * @var string
      */
     protected string $userName;
+
+    /**
+     * @return string
+     */
+    public function getUserName(): string
+    {
+        return $this->userName;
+    }
     /**
      * @var string
      */
     protected string $email;
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
     /**
      * @var string
      */
     protected string $password;
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
     /**
      * @var SessionTokensModel
      */
     protected SessionTokensModel $sessionTokens;
+
+    /**
+     * @return SessionTokensModel
+     */
+    public function getSessionTokens(): SessionTokensModel
+    {
+        return $this->sessionTokens;
+    }
     /**
      * @var string
      */
     protected string $roleID;
+
+    /**
+     * @return string
+     */
+    public function getRoleID(): string
+    {
+        return $this->roleID;
+    }
     /**
      * @var string
      */
     protected string $globalRoleID;
+
+    /**
+     * @return string
+     */
+    public function getGlobalRoleID(): string
+    {
+        return $this->globalRoleID;
+    }
     /**
      * @var bool
      */
     protected bool $enabled;
+
+    /**
+     * @return bool
+     */
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
     /**
      * @var UserSettingsModel
      */
     protected UserSettingsModel $userSettings;
+
+    /**
+     * @return UserSettingsModel
+     */
+    public function getUserSettings(): UserSettingsModel
+    {
+        return $this->userSettings;
+    }
     /**
      * @var string
      */
     protected string $organisationID;
 
     /**
+     * @return string
+     */
+    public function getOrganisationID(): string
+    {
+        return $this->organisationID;
+    }
+
+    /**
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+
+    /**
      * @param string $id
      * @param string $email
      * @param string $sessionToken
+     * @return UserModel
      * @throws OpenPOSException
      */
-    public function __construct(string $id = "", string $email = "", string $sessionToken = "")
+    public static function Find(string $id = "", string $email = "", string $sessionToken = ""): UserModel
     {
-        parent::__construct();
+        $requestedUser = new UserModel();
         if($id)
         {
             $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
@@ -81,25 +174,38 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         }
 
         //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
-        $data = $this->execute($stmt)[0];
-        $this->id = $data["id"];
-        $this->userName = $data["userName"];
-        $this->email = $data["email"];
-        $this->password = $data["password"];
-        $this->sessionTokens = new SessionTokensModel(json_decode($data["sessionTokens"]));
-        $this->roleID = $data["roleID"];
-        $this->globalRoleID = $data["globalRoleID"];
-        $this->enabled = $data["enabled"];
-        $this->userSettings = new UserSettingsModel(json_decode($data["userSettings"]));
-        $this->organisationID = $data["organisationID"];
+        $data = \DatabaseManager::getInstance()->execute($stmt)[0];
+        $requestedUser->id = $data["id"];
+        $requestedUser->userName = $data["userName"];
+        $requestedUser->email = $data["email"];
+        $requestedUser->password = $data["password"];
+        $requestedUser->sessionTokens = SessionTokensModel::Find($data["id"]);
+        $requestedUser->roleID = $data["roleID"];
+        $requestedUser->globalRoleID = $data["globalRoleID"];
+        $requestedUser->enabled = $data["enabled"];
+        $requestedUser->userSettings = UserSettingsModel::Find($data["id"]);
+        $requestedUser->organisationID = $data["organisationID"];
+        return $requestedUser;
     }
 
     /**
-     * @return string
+     * @throws OpenPOSException
      */
-    public function getPassword(): string
+    public static function Create($userName = "", $email = "", $password = "", $organisationID = "", $roleID = "", $globalRoleID = "user", $enabled = true): UserModel
     {
-        return $this->password;
+        if(!$userName || !$email || !$password || !$organisationID || !$roleID || !$globalRoleID)
+        {
+            throw new OpenPOSException("Failed to provide UserName, Email, Password, OrganisationID, RoleID, or GlobalRoleID", "UserModel", "insufficient_inputs", "insufficient_inputs");
+        }
+
+        $stmt = (new \SQLQuery())->insertInto("users", ["userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"], [$userName, $email, password_hash($password, PASSWORD_DEFAULT), SessionTokensModel::Create()->toJson(), $roleID, $globalRoleID, $enabled, UserSettingsModel::Create()->toJson(), $organisationID]);
+        $result = \DatabaseManager::getInstance()->execute($stmt);
+        if(!$result)
+        {
+            throw new OpenPOSException("Failed to create new user!", "UserModel", "create_fail", "internal_error");
+        }
+
+        return UserModel::Find("", $email);
     }
 
     /**
@@ -108,15 +214,15 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
     public function toArray(): array
     {
         return array(
-        "id" => $this->id,
-        "userName" => $this->userName,
-        "email" => $this->email,
-        "sessionTokens" => $this->sessionTokens->toArray(),
-        "roleID" => $this->roleID,
-        "globalRoleID" => $this->globalRoleID,
-        "enabled" => $this->enabled,
-        "userSettings" => $this->userSettings->toArray(),
-        "organisationID" => $this->organisationID,
+            "id" => $this->id,
+            "userName" => $this->userName,
+            "email" => $this->email,
+            "sessionTokens" => $this->sessionTokens->toArray(),
+            "roleID" => $this->roleID,
+            "globalRoleID" => $this->globalRoleID,
+            "enabled" => $this->enabled,
+            "userSettings" => $this->userSettings->toArray(),
+            "organisationID" => $this->organisationID,
         );
     }
 }

@@ -76,36 +76,10 @@ class UserSummaryModel extends BaseDatabaseModel implements BaseModelInterface
      * @param string $sessionToken
      * @throws OpenPOSException
      */
-    public function __construct(string $id = "", string $email = "", string $sessionToken = "")
+    public function __construct()
     {
         parent::__construct();
-        if($id)
-        {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
 
-        }
-        else if($email)
-        {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("email")->equals()->variable($email);
-        }
-        else if($sessionToken)
-        {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("sessionToken")->equals()->variable($sessionToken);
-        }
-        else
-        {
-            throw new OpenPOSException("Failed to provide ID, Email, or SessionToken", "UserModel", "no_token", "no_token");
-        }
-
-        //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
-        $data = $this->execute($stmt)[0];
-        $this->id = $data["id"];
-        $this->userName = $data["userName"];
-        $this->email = $data["email"];
-        $this->roleID = $data["roleID"];
-        $this->globalRoleID = $data["globalRoleID"];
-        $this->enabled = $data["enabled"];
-        $this->organisationID = $data["organisationID"];
     }
 
     /**
@@ -122,5 +96,53 @@ class UserSummaryModel extends BaseDatabaseModel implements BaseModelInterface
             "enabled" => $this->enabled,
             "organisationID" => $this->organisationID,
         );
+    }
+
+    /**
+     * @param string $id
+     * @param string $email
+     * @param string $sessionToken
+     * @return UserSummaryModel
+     * @throws OpenPOSException
+     */
+    public static function Find(string $id = "", string $email = "", string $sessionToken = ""): UserSummaryModel
+    {
+        $requestedUser = new UserSummaryModel();
+        if($id)
+        {
+            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
+        }
+        else if($email)
+        {
+            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("email")->equals()->variable($email);
+        }
+        else if($sessionToken)
+        {
+            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("sessionToken")->equals()->variable($sessionToken);
+        }
+        else
+        {
+            throw new OpenPOSException("Failed to provide ID, Email, or SessionToken", "UserModel", "no_token", "no_token");
+        }
+
+        //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
+        $data = \DatabaseManager::getInstance()->execute($stmt)[0];
+        $requestedUser->id = $data["id"];
+        $requestedUser->userName = $data["userName"];
+        $requestedUser->email = $data["email"];
+        $requestedUser->roleID = $data["roleID"];
+        $requestedUser->globalRoleID = $data["globalRoleID"];
+        $requestedUser->enabled = $data["enabled"];
+        $requestedUser->organisationID = $data["organisationID"];
+        return $requestedUser;
+    }
+
+    /**
+     * @return UserSummaryModel
+     * @throws OpenPOSException
+     */
+    public static function Create(): UserSummaryModel
+    {
+        throw new OpenPOSException("Tried to create blank user summary, but there is nothing to create.", "UserSummaryModel","create_fail", "internal_error");
     }
 }
