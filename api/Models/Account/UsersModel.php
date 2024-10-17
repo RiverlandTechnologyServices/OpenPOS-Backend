@@ -1,11 +1,11 @@
 <?php
 /**
  *  $DESCRIPTION$ $END$
- * @name UsersModel.php
+ * @name \OpenPOS\Models\Account\UsersModel.php
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
-namespace OpenPOS\Models;
+namespace OpenPOS\Models\Account;
 
 use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseDatabaseModel;

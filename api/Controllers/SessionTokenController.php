@@ -9,12 +9,10 @@ namespace OpenPOS\Controllers;
 
 use OpenPOS\Common\Logger;
 use OpenPOS\Common\OpenPOSException;
-use OpenPOS\Controllers\BaseController;
-use OpenPOS\Controllers\BaseControllerInterface;
+use OpenPOS\Models\Account\SessionTokenModel;
+use OpenPOS\Models\Account\UserModel;
+use OpenPOS\Models\Account\UserSummaryModel;
 use OpenPOS\Models\PermissionsModel;
-use OpenPOS\Models\SessionTokenModel;
-use OpenPOS\Models\UserModel;
-use OpenPOS\Models\UserSummaryModel;
 
 class SessionTokenController extends BaseController implements BaseControllerInterface
 {

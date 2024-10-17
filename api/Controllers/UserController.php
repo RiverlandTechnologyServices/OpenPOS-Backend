@@ -9,10 +9,9 @@ namespace OpenPOS\Controllers;
 
 use OpenPOS\Common\Logger;
 use OpenPOS\Common\OpenPOSException;
+use OpenPOS\Models\Account\UserModel;
+use OpenPOS\Models\Account\UserSummaryModel;
 use OpenPOS\Models\PermissionsModel;
-use OpenPOS\Models\UserModel;
-use OpenPOS\Models\UsersModel;
-use OpenPOS\Models\UserSummaryModel;
 
 class UserController extends BaseController implements BaseControllerInterface
 {

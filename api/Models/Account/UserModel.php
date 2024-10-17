@@ -1,15 +1,16 @@
 <?php
 /**
  *  $DESCRIPTION$ $END$
- * @name UserModel.php
+ * @name \OpenPOS\Models\Account\UserModel.php
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
-namespace OpenPOS\Models;
+namespace OpenPOS\Models\Account;
 
-use http\Client\Curl\User;
-use OpenPOS\Common\Logger;
+use DatabaseManager;
 use OpenPOS\Common\OpenPOSException;
+use OpenPOS\Models\BaseDatabaseModel;
+use OpenPOS\Models\BaseModelInterface;
 
 /**
  *
@@ -190,6 +191,13 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         if(!$userName || !$email || !$password || !$organisationID || !$roleID || !$globalRoleID)
         {
             throw new OpenPOSException("Failed to provide UserName, Email, Password, OrganisationID, RoleID, or GlobalRoleID", "UserModel", "insufficient_inputs", "insufficient_inputs");
+        }
+
+        $stmt = (new \SQLQuery())->select(["id"])->from("users")->where()->variableName("email")->equals()->variable($email);
+        $result = DatabaseManager::getInstance()->execute($stmt);
+        if($result->num_rows != 0)
+        {
+            throw new OpenPOSException("User already exists", "UserModel", "user_already_exists", "user_already_exists");
         }
 
         $stmt = (new \SQLQuery())->insertInto("users", ["userName", "email", "password", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"], [$userName, $email, password_hash($password, PASSWORD_DEFAULT), $roleID, $globalRoleID, $enabled, UserSettingsModel::Create()->toJson(), $organisationID]);

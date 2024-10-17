@@ -5,9 +5,10 @@
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
-namespace OpenPOS\Models;
+namespace OpenPOS\Models\Account;
 
 use OpenPOS\Common\OpenPOSException;
+use OpenPOS\Models\BaseDatabaseModel;
 use OpenPOS\Models\BaseModelInterface;
 
 class UserSettingsModel extends BaseDatabaseModel implements BaseModelInterface
@@ -40,7 +41,7 @@ class UserSettingsModel extends BaseDatabaseModel implements BaseModelInterface
     {
         if(!$userID)
         {
-            throw new OpenPOSException("No Role ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
+            throw new OpenPOSException("No RoleModel ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
         }
         $userSettings = new UserSettingsModel();
         $stmt = (new \SQLQuery())->select(["userSettings"])->from("users")->where()->variableName("id")->equals()->variable($userID);

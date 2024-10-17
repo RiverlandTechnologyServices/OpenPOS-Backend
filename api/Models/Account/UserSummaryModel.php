@@ -5,10 +5,11 @@
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
-namespace OpenPOS\Models;
+namespace OpenPOS\Models\Account;
 
-use OpenPOS\Common\Logger;
 use OpenPOS\Common\OpenPOSException;
+use OpenPOS\Models\BaseDatabaseModel;
+use OpenPOS\Models\BaseModelInterface;
 
 class UserSummaryModel extends BaseDatabaseModel implements BaseModelInterface
 {

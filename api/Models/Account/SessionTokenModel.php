@@ -1,15 +1,17 @@
 <?php
 /**
  *  $DESCRIPTION$ $END$
- * @name SessionTokenModel.php
+ * @name \OpenPOS\Models\Account\SessionTokenModel.php
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
-namespace OpenPOS\Models;
+namespace OpenPOS\Models\Account;
 
 use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseDatabaseModel;
 use OpenPOS\Models\BaseModelInterface;
+use OpenPOS\Models\Random;
+use OpenPOS\Models\TimeModel;
 
 class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
 {

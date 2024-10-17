@@ -1,13 +1,15 @@
 <?php
 /**
  *  $DESCRIPTION$ $END$
- * @name SessionTokensModel.php
+ * @name \OpenPOS\Models\Account\SessionTokensModel.php
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
-namespace OpenPOS\Models;
+namespace OpenPOS\Models\Account;
 
 use OpenPOS\Common\OpenPOSException;
+use OpenPOS\Models\BaseDatabaseModel;
+use OpenPOS\Models\BaseModelInterface;
 
 class SessionTokensModel extends BaseDatabaseModel implements BaseModelInterface
 {
@@ -41,7 +43,7 @@ class SessionTokensModel extends BaseDatabaseModel implements BaseModelInterface
     {
         if(!$userID)
         {
-            throw new OpenPOSException("No Role ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
+            throw new OpenPOSException("No RoleModel ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
         }
         $sessionTokens = new SessionTokensModel();
         $stmt = (new \SQLQuery())->select(["id"])->from("sessionTokens")->where()->variableName("userID")->equals()->variable($userID);

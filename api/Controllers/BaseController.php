@@ -7,8 +7,8 @@
 namespace OpenPOS\Controllers;
 
 use OpenPOS\Common\Logger;
+use OpenPOS\Models\Account\UserSummaryModel;
 use OpenPOS\Models\PermissionsModel;
-use OpenPOS\Models\UserSummaryModel;
 
 require_once __DIR__ . "/../common/bootstrap.inc.php";
 
