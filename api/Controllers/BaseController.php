@@ -35,41 +35,41 @@ class BaseController implements BaseControllerInterface
 
     public function __call($name, $arguments)
     {
-        // TODO: Implement __call() method.
+        $this->error("endpoint_not_found");
     }
 
     public function get(array $args): void
     {
-        $sessionToken = $_GET['session_token'] ?? null;
+        $sessionToken = $_SERVER['HTTP_SESSION_TOKEN'] ?? null;
         $this->sessionToken = $sessionToken;
     }
 
     public function post(array $args): void
     {
-        $this->postBody = json_decode(file_get_contents('php://input'), true);
-        $sessionToken = $this->postBody['session_token'] ?? null;
-        $this->sessionToken = $sessionToken;
+        $post = json_decode(file_get_contents('php://input'), true);
+        $this->postBody = $post["data"];
+        $this->sessionToken = $post["session_token"] ?? null;
     }
 
     public function put(array $args): void
     {
-        $this->postBody = json_decode(file_get_contents('php://input'), true);
-        $sessionToken = $this->postBody['session_token'] ?? null;
-        $this->sessionToken = $sessionToken;
+        $post = json_decode(file_get_contents('php://input'), true);
+        $this->postBody = $post["data"];
+        $this->sessionToken = $post["session_token"] ?? null;
     }
 
     public function delete(array $args): void
     {
-        $this->postBody = json_decode(file_get_contents('php://input'), true);
-        $sessionToken = $this->postBody['session_token'] ?? null;
-        $this->sessionToken = $sessionToken;
+        $post = json_decode(file_get_contents('php://input'), true);
+        $this->postBody = $post["data"];
+        $this->sessionToken = $post["session_token"] ?? null;
     }
 
     public function patch(array $args): void
     {
-        $this->postBody = json_decode(file_get_contents('php://input'), true);
-        $sessionToken = $this->postBody['session_token'] ?? null;
-        $this->sessionToken = $sessionToken;
+        $post = json_decode(file_get_contents('php://input'), true);
+        $this->postBody = $post["data"];
+        $this->sessionToken = $post["session_token"] ?? null;
     }
 
     public final function head(array $args): void
@@ -79,7 +79,7 @@ class BaseController implements BaseControllerInterface
 
     public function options(array $args): void
     {
-        $sessionToken = $_GET['session_token'] ?? null;
+        $sessionToken = $_SERVER['HTTP_SESSION_TOKEN'] ?? null;
         $this->sessionToken = $sessionToken;
     }
 
@@ -93,6 +93,8 @@ class BaseController implements BaseControllerInterface
 
     protected function error(string $errorCode): void
     {
+        // TODO: Allow OpenPOSException to define http response code
+        http_response_code(499);
         echo json_encode(array(
             "success" => false,
             "errorCode" => $errorCode

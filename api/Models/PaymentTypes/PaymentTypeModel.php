@@ -17,12 +17,48 @@ enum PaymentType: int
 class PaymentTypeModel extends BaseDatabaseModel implements BaseModelInterface
 {
     protected string $id;
+
+    public function getID(): string
+    {
+        return $this->id;
+    }
+
     protected string $name;
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     protected string $readableName;
+
+    public function getReadableName(): string
+    {
+        return $this->readableName;
+    }
+
     protected string $organisationId;
+
+    public function getOrganisationID(): string
+    {
+        return $this->organisationId;
+    }
     protected string $locationId;
+    public function getLocationID(): string
+    {
+        return $this->locationId;
+    }
     protected PaymentType $paymentType;
+    public function getPaymentType(): PaymentType
+    {
+        return $this->paymentType;
+    }
+
     protected array $paymentTypeSettings;
+    public function getPaymentTypeSettings(): array
+    {
+        return $this->paymentTypeSettings;
+    }
 
     function __construct()
     {

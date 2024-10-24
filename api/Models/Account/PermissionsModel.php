@@ -46,7 +46,7 @@ class RoleModel extends BaseDatabaseModel implements BaseModelInterface
      * Permissions *
      ***************/
     /**
-     * Permission for accessing users within the organisation.
+     * Permission for accessing Users within the organisation.
      * @var PermissionValues
      */
     protected PermissionValues $users;
@@ -57,6 +57,20 @@ class RoleModel extends BaseDatabaseModel implements BaseModelInterface
     public function canWriteUsers(): bool
     {
         return PermissionValues::canWrite($this->users);
+    }
+
+    /**
+     * Permission for accessing Payment Types within the organisation.
+     * @var PermissionValues
+     */
+    protected PermissionValues $paymentTypes;
+    public function canReadPaymentTypes(): bool
+    {
+        return PermissionValues::canRead($this->paymentTypes);
+    }
+    public function canWritePaymentTypes(): bool
+    {
+        return PermissionValues::canWrite($this->paymentTypes);
     }
 
     function __construct()

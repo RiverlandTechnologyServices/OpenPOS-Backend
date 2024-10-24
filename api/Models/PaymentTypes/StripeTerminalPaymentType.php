@@ -13,21 +13,25 @@ class StripeTerminalPaymentType extends PaymentTypeModel implements BaseModelInt
      * @param string $readableName
      * @param string $organisationId
      * @param string $locationId
+     * @param string $registrationCode
      * @return StripeTerminalPaymentType
      * @throws OpenPOSException
      */
     public static function Create(string $name = "", string $readableName = "", string $organisationId = "", string $locationId = "", string $registrationCode = ""): self
     {
+        try
+        {
+            $reader = \OpenPOS\Common\StripeUtils::GetInstance()->getClient()->terminal->readers->create([
+                "registration_code" => $registrationCode,
+                "label" => $readableName,
+                "location" => $locationId,
+            ],
+            [
+                "stripe_account" => OrganisationModel::Find($organisationId)->getStripeAccountId(),
+            ]);
 
-        $reader = \OpenPOS\Common\StripeUtils::GetInstance()->getClient()->terminal->readers->create([
-            "registration_code" => $registrationCode,
-            "label" => $readableName,
-            "location" => $locationId,
-        ],
-        [
-            "stripe_account" => OrganisationModel::Find($organisationId)->getStripeAccountId(),
-        ]);
-        if(!$reader)
+        }
+        catch(\Exception $e)
         {
             throw new OpenPOSException("Unable to create StripeTerminal Reader", "StripeTerminalPaymentType", "create_stripe_terminal", "internal_error");
         }

@@ -20,8 +20,8 @@ class SessionTokenController extends BaseController implements BaseControllerInt
     {
         parent::get($args);
         try {
-            $sessionUser = UserSummaryModel::Find($this->sessionToken);
-            $requestedUser = UserModel::Find($args[0]);
+            $sessionUser = UserSummaryModel::Find("", "", $this->sessionToken);
+            $requestedUser = UserModel::Find("", "", $args[0]);
             $requestedToken = SessionTokenModel::Find($args[1]);
 
             if($sessionUser->getID() == $requestedUser->getID())
