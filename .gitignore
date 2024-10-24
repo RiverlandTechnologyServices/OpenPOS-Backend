@@ -138,4 +138,4 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/phpstorm,visualstudiocode
 
 vendor/
-composer.phar
+composer.lock

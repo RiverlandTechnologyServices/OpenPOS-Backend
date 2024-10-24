@@ -1,6 +1,6 @@
 {
-  "name": "openpos/openpos-backend",
-  "description": "OpenPOS Backend",
+  "name": "riverlandtechnologyservices/openpos-backend",
+  "description": "Backend for OpenPOS",
   "minimum-stability": "stable",
   "license": "AGPL-3.0-or-later",
   "authors": [
@@ -10,6 +10,6 @@
     }
   ],
   "require": {
-    "stripe/stripe-php": "v16.1.0"
+    "stripe/stripe-php": ">=v16.1.1"
   }
 }
