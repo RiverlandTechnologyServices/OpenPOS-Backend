@@ -29,7 +29,7 @@ interface BaseControllerInterface
  */
 class BaseController implements BaseControllerInterface
 {
-    protected string $sessionToken;
+    protected string|null $sessionToken;
     protected array $postBody;
 
 
