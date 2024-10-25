@@ -5,6 +5,8 @@
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
+require_once "common/bootstrap.inc.php";
+
 $router = new \OpenPOS\Common\Router();
 $router->RegisterRoute("/api/v1/users", new \OpenPOS\Controllers\UsersController());
 $router->RegisterRoute("/api/v1/user/{userID}", new \OpenPOS\Controllers\UserController());
