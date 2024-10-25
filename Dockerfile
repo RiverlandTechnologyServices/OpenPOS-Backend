@@ -7,7 +7,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
                                      && php composer-setup.php \
                                      && php -r "unlink('composer-setup.php');" \
                                      && mv composer.phar /usr/local/bin/composer
-RUN mkdir /app
-WORKDIR /app
+RUN mkdir /var/www/openpos
+WORKDIR /var/www/openpos
 COPY [".", "."]
+RUN composer install
 COPY ["./site/*", "/etc/apache2/sites-available/"]
