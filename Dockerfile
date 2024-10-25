@@ -10,5 +10,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 RUN mkdir /var/www/openpos
 WORKDIR /var/www/openpos
 COPY [".", "."]
+RUN apt update && apt install -y git
 RUN composer install
 COPY ["./site/*", "/etc/apache2/sites-available/"]
