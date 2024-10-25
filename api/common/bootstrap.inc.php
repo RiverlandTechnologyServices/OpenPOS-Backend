@@ -37,6 +37,7 @@ function includeDir($path) {
 
 require_once SOURCE_ROOT_PATH . "Controllers/BaseController.php";
 require_once SOURCE_ROOT_PATH . "Models/BaseModel.php";
+require_once SOURCE_ROOT_PATH . "Models/BaseDatabaseModel.php";
 require_once PROJECT_ROOT_PATH . "config.inc.php";
 includeDir(SOURCE_ROOT_PATH);
 require_once PROJECT_ROOT_PATH . "vendor/autoload.php";

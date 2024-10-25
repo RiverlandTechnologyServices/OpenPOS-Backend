@@ -69,6 +69,7 @@ class Router
         }
 
         // TODO: Send 404
+        echo json_encode(["error" => "routenoteround", "routes" => $this->routes, "requestedRoute" => $requestedRoute]);
     }
 
 }
