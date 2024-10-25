@@ -11,8 +11,8 @@ class PaymentTypeController extends BaseController implements BaseControllerInte
     {
         parent::get($args);
         try {
-            $sessionUser = \OpenPOS\Models\UserSummaryModel::Find("", "", $this->sessionToken);
-            $sessionPermissions = \OpenPOS\Models\PermissionsModel::Find($sessionUser->getRoleID());
+            $sessionUser = \OpenPOS\Models\Account\UserSummaryModel::Find("", "", $this->sessionToken);
+            $sessionPermissions = \OpenPOS\Models\Account\RoleModel::Find($sessionUser->getRoleID());
             $requestedPaymentType = \OpenPOS\Models\PaymentTypes\PaymentTypeModel::Find($args[0]);
 
             if($sessionUser->getOrganisationID() == $requestedPaymentType->getOrganisationID() && $sessionPermissions->canReadPaymentTypes())

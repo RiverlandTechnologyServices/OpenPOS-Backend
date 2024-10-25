@@ -7,12 +7,6 @@
 
 namespace OpenPOS\Controllers;
 
-use OpenPOS\Common\Logger;
-use OpenPOS\Common\OpenPOSException;
-use OpenPOS\Models\Account\SessionTokensModel;
-use OpenPOS\Models\Account\UserSummaryModel;
-use OpenPOS\Models\PermissionsModel;
-
 class SessionTokensController extends BaseController implements BaseControllerInterface
 {
     public function get(array $args): void
@@ -20,21 +14,21 @@ class SessionTokensController extends BaseController implements BaseControllerIn
         parent::get($args);
 
         try {
-            $sessionUser = UserSummaryModel::Find($this->sessionToken);
+            $sessionUser = \OpenPOS\Models\Account\UserSummaryModel::Find($this->sessionToken);
             $userID = $args[0];
 
             if($sessionUser->getID() == $userID)
             {
-                $sessionTokens = SessionTokensModel::Find($userID);
+                $sessionTokens = \OpenPOS\Models\Account\SessionTokensModel::Find($userID);
                 $this->success($sessionTokens->toArray());
             }
             else
             {
-                throw new OpenPOSException('Unauthorised access to resource', "SessionTokensController", "no_permission", "no_permission");
+                throw new \OpenPOS\Common\OpenPOSException('Unauthorised access to resource', "SessionTokensController", "no_permission", "no_permission");
             }
-        } catch (OpenPOSException $e) {
+        } catch (\OpenPOS\Common\OpenPOSException $e) {
             $this->error($e->getPublicCode());
-            Logger::error($e);
+            \OpenPOS\Common\Logger::error($e);
         }
 
 

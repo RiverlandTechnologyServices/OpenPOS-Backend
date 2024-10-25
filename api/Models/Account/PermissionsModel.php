@@ -99,7 +99,7 @@ class RoleModel extends BaseDatabaseModel implements BaseModelInterface
     {
         if(!$roleID)
         {
-            throw new OpenPOSException("No RoleModel ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
+            throw new OpenPOSException("No Role ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
         }
 
         $permissions = new RoleModel();

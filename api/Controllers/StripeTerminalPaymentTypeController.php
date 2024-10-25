@@ -2,9 +2,6 @@
 
 namespace OpenPOS\Controllers;
 
-use OpenPOS\Controllers\BaseController;
-use OpenPOS\Controllers\BaseControllerInterface;
-
 class StripeTerminalPaymentTypeController extends BaseController implements BaseControllerInterface
 {
     public function post(array $args): void

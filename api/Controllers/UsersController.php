@@ -7,12 +7,6 @@
 
 namespace OpenPOS\Controllers;
 
-use OpenPOS\Common\Logger;
-use OpenPOS\Common\OpenPOSException;
-use OpenPOS\Models\Account\UsersModel;
-use OpenPOS\Models\Account\UserSummaryModel;
-use OpenPOS\Models\PermissionsModel;
-
 class UsersController extends BaseController implements BaseControllerInterface
 {
     public function get(array $args): void
@@ -20,8 +14,8 @@ class UsersController extends BaseController implements BaseControllerInterface
         parent::get($args);
 
         try {
-            $sessionUser = UserSummaryModel::Find($this->sessionToken);
-            $sessionPermissions = PermissionsModel::Find($sessionUser->getRoleID());
+            $sessionUser = \OpenPOS\Models\Account\UserSummaryModel::Find($this->sessionToken);
+            $sessionPermissions = \OpenPOS\Models\Account\RoleModel::Find($sessionUser->getRoleID());
             $userName = $_GET["userName"] ?? "";
             $organisationID = $_GET['organisationID'] ?? "";
             $roleID = $_GET['roleID'] ?? "";
@@ -31,16 +25,16 @@ class UsersController extends BaseController implements BaseControllerInterface
 
             if($sessionUser->getOrganisationID() == $organisationID && $sessionPermissions->canReadUsers())
             {
-                $users = UsersModel::Find($userName, $organisationID, $roleID, $globalRoleID, $enabled, $searchTerm);
+                $users = \OpenPOS\Models\Account\UsersModel::Find($userName, $organisationID, $roleID, $globalRoleID, $enabled, $searchTerm);
                 $this->success($users->toArray());
             }
             else
             {
-                throw new OpenPOSException('Unauthorised access to resource', "UsersController", "no_permission", "no_permission");
+                throw new \OpenPOS\Common\OpenPOSException('Unauthorised access to resource', "UsersController", "no_permission", "no_permission");
             }
-        } catch (OpenPOSException $e) {
+        } catch (\OpenPOS\Common\OpenPOSException $e) {
             $this->error($e->getPublicCode());
-            Logger::error($e);
+            \OpenPOS\Common\Logger::error($e);
         }
 
 

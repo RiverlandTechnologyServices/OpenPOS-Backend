@@ -88,7 +88,7 @@ class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
             $user = UserModel::Find("", $email);
             if(password_verify($password, $user->getPassword()))
             {
-                $randomiser = new Random\Randomizer(new Random\Engine\Secure());
+                $randomiser = new \Random\Randomizer(new Random\Engine\Secure());
                 $sessionToken = $randomiser->getBytesFromString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#%^&*()_+-=", 128);
                 $stmt = (new \SQLQuery())->insertInto("sessionTokens", ["userID", "token", "active", "timeCreated"], [$user->getID(), $sessionToken, true, time()]);
                 $result = \DatabaseManager::getInstance()->execute($stmt);
