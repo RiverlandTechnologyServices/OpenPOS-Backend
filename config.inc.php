@@ -9,6 +9,8 @@
  * OpenPOS Configuration *
  *************************/
 
+const STRIPE_LIVE_KEY = "";
+
 
 /**************************
  * Database Configuration *

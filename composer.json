@@ -1,0 +1,15 @@
+{
+  "name": "riverlandtechnologyservices/openpos-backend",
+  "description": "Backend for OpenPOS",
+  "minimum-stability": "stable",
+  "license": "AGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Riverland Technology Services",
+      "email": "admin@riverlandtech.au"
+    }
+  ],
+  "require": {
+    "stripe/stripe-php": ">=v16.1.1"
+  }
+}

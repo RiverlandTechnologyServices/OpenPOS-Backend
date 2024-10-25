@@ -7,14 +7,6 @@
 
 namespace OpenPOS\Controllers;
 
-use OpenPOS\Common\Logger;
-use OpenPOS\Common\OpenPOSException;
-use OpenPOS\Controllers\BaseController;
-use OpenPOS\Controllers\BaseControllerInterface;
-use OpenPOS\Models\PermissionsModel;
-use OpenPOS\Models\SessionTokenModel;
-use OpenPOS\Models\UserModel;
-use OpenPOS\Models\UserSummaryModel;
 
 class SessionTokenController extends BaseController implements BaseControllerInterface
 {
@@ -22,9 +14,9 @@ class SessionTokenController extends BaseController implements BaseControllerInt
     {
         parent::get($args);
         try {
-            $sessionUser = UserSummaryModel::Find($this->sessionToken);
-            $requestedUser = UserModel::Find($args[0]);
-            $requestedToken = SessionTokenModel::Find($args[1]);
+            $sessionUser = \OpenPOS\Models\Account\UserSummaryModel::Find("", "", $this->sessionToken);
+            $requestedUser = \OpenPOS\Models\Account\UserModel::Find("", "", $args[0]);
+            $requestedToken = \OpenPOS\Models\Account\SessionTokenModel::Find($args[1]);
 
             if($sessionUser->getID() == $requestedUser->getID())
             {
@@ -32,11 +24,11 @@ class SessionTokenController extends BaseController implements BaseControllerInt
             }
             else
             {
-                throw new OpenPOSException('Unauthorised access to resource', "UserController", "no_permission", "no_permission");
+                throw new \OpenPOS\Common\OpenPOSException('Unauthorised access to resource', "UserController", "no_permission", "no_permission");
             }
-        } catch (OpenPOSException $e) {
+        } catch (\OpenPOS\Common\OpenPOSException $e) {
             $this->error($e->getPublicCode());
-            Logger::error($e);
+            \OpenPOS\Common\Logger::error($e);
         }
 
     }
@@ -45,11 +37,11 @@ class SessionTokenController extends BaseController implements BaseControllerInt
     {
         parent::post($args);
         try {
-            $newSession = SessionTokenModel::Create($this->postBody["email"], $this->postBody["password"]);
+            $newSession = \OpenPOS\Models\Account\SessionTokenModel::Create($this->postBody["email"], $this->postBody["password"]);
             $this->success($newSession->toArray());
-        } catch (OpenPOSException $e) {
+        } catch (\OpenPOS\Common\OpenPOSException $e) {
             $this->error($e->getPublicCode());
-            Logger::error($e);
+            \OpenPOS\Common\Logger::error($e);
         }
     }
 

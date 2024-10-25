@@ -1,15 +1,17 @@
 <?php
 /**
  *  $DESCRIPTION$ $END$
- * @name SessionTokenModel.php
+ * @name \OpenPOS\Models\Account\SessionTokenModel.php
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
-namespace OpenPOS\Models;
+namespace OpenPOS\Models\Account;
 
 use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseDatabaseModel;
 use OpenPOS\Models\BaseModelInterface;
+use OpenPOS\Models\Random;
+use OpenPOS\Models\TimeModel;
 
 class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
 {
@@ -86,7 +88,7 @@ class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
             $user = UserModel::Find("", $email);
             if(password_verify($password, $user->getPassword()))
             {
-                $randomiser = new Random\Randomizer(new Random\Engine\Secure());
+                $randomiser = new \Random\Randomizer(new Random\Engine\Secure());
                 $sessionToken = $randomiser->getBytesFromString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#%^&*()_+-=", 128);
                 $stmt = (new \SQLQuery())->insertInto("sessionTokens", ["userID", "token", "active", "timeCreated"], [$user->getID(), $sessionToken, true, time()]);
                 $result = \DatabaseManager::getInstance()->execute($stmt);

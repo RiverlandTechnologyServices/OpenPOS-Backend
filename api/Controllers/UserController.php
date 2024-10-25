@@ -7,22 +7,15 @@
 
 namespace OpenPOS\Controllers;
 
-use OpenPOS\Common\Logger;
-use OpenPOS\Common\OpenPOSException;
-use OpenPOS\Models\PermissionsModel;
-use OpenPOS\Models\UserModel;
-use OpenPOS\Models\UsersModel;
-use OpenPOS\Models\UserSummaryModel;
-
 class UserController extends BaseController implements BaseControllerInterface
 {
     public function get(array $args): void
     {
         parent::get($args);
         try {
-            $sessionUser = UserSummaryModel::Find($this->sessionToken);
-            $sessionPermissions = PermissionsModel::Find($sessionUser->getRoleID());
-            $requestedUser = UserModel::Find($args[0]);
+            $sessionUser = \OpenPOS\Models\Account\UserSummaryModel::Find("", "", $this->sessionToken);
+            $sessionPermissions = \OpenPOS\Models\Account\RoleModel::Find($sessionUser->getRoleID());
+            $requestedUser = \OpenPOS\Models\Account\UserModel::Find($args[0]);
 
             if(($sessionUser->getOrganisationID() == $requestedUser->getOrganisationID() && $sessionPermissions->canReadUsers()) || $sessionUser->getID() == $requestedUser->getID())
             {
@@ -30,24 +23,23 @@ class UserController extends BaseController implements BaseControllerInterface
             }
             else
             {
-                throw new OpenPOSException('Unauthorised access to resource', "UserController", "no_permission", "no_permission");
+                throw new \OpenPOS\Common\OpenPOSException('Unauthorised access to resource', "UserController", "no_permission", "no_permission");
             }
-        } catch (OpenPOSException $e) {
+        } catch (\OpenPOS\Common\OpenPOSException $e) {
             $this->error($e->getPublicCode());
-            Logger::error($e);
+            \OpenPOS\Common\Logger::error($e);
         }
-
     }
 
     public function post(array $args): void
     {
         parent::post($args);
         try {
-            $newUser = UserModel::Create($this->postBody["userName"], $this->postBody["email"], $this->postBody["password"], $this->postBody["organisationID"], $this->postBody["roleID"], "user", $this->postBody["enabled"]);
+            $newUser = \OpenPOS\Models\Account\UserModel::Create($this->postBody["userName"], $this->postBody["email"], $this->postBody["password"], $this->postBody["organisationID"], $this->postBody["roleID"], "user", $this->postBody["enabled"]);
             $this->success($newUser->toArray());
-        } catch (OpenPOSException $e) {
+        } catch (\OpenPOS\Common\OpenPOSException $e) {
             $this->error($e->getPublicCode());
-            Logger::error($e);
+            \OpenPOS\Common\Logger::error($e);
         }
     }
 
