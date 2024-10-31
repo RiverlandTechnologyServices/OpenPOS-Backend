@@ -32,7 +32,7 @@ class SQLQuery
         {
             throw new OpenPOSException("Parameter names must be the same length as parameters", "SQLQuery", "parameter_mismatch", "internal_error");
         }
-        $this->stmt = "INSERT INTO " . $table . " " . implode(", ", $parameterNames) . " VALUES (" . str_repeat("?,", count($parameterNames)-1) . "?)";
+        $this->stmt = "INSERT INTO " . $table . " (" . implode(" , ", $parameterNames) . ") VALUES (" . str_repeat("?,", count($parameterNames)-1) . "?);";
         $this->parameters = array_merge($this->parameters, $parameters);
         return $this;
     }
@@ -137,13 +137,13 @@ class SQLQuery
 class DatabaseManager
 {
     private static DatabaseManager $instance;
-    protected ?mysqli $connection = null;
+    protected ?\mysqli $connection = null;
 
     private function __construct()
     {
         try
         {
-            $this->connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+            $this->connection = new \mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
             if($this->connection->connect_errno)
             {
@@ -167,7 +167,7 @@ class DatabaseManager
      */
     public function execute(SQLQuery $stmt): \mysqli_result|bool|null
     {
-        $results = $this->connection->execute_query($stmt->getStmt(), $stmt->getParameters());
+        $results = $this->connection->execute_query($stmt->getStmt() . ";", $stmt->getParameters());
 
         if($this->connection->errno)
             throw new OpenPOSException("Failed to submit database query", "DatabaseManager", "db_query_fail", "internal_error");

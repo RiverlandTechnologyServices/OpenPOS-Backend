@@ -54,7 +54,7 @@ class OrganisationModel extends BaseDatabaseModel implements BaseModelInterface
 
         //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
 
-        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)[0])
+        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc()[0])
         {
             $requestedOrganisation->id = $data["id"];
             $requestedOrganisation->organisationID = $data["organisationID"];
@@ -83,10 +83,11 @@ class OrganisationModel extends BaseDatabaseModel implements BaseModelInterface
                 ],
                 'capabilities' => [
                     'card_payments' => ['requested' => true],
+                    'transfers' => ['requested' => true],
                 ],
                 'country' => "AU",
             ]);
-            $stripeAccountId = $account->id;
+            $stripeAccount = $account->id;
         }
         catch (\Exception $e)
         {
@@ -100,7 +101,7 @@ class OrganisationModel extends BaseDatabaseModel implements BaseModelInterface
 
 
 
-        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("organisation")->where()->variableName("organisationID")->equals()->variable($organisationID);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("organisations")->where()->variableName("organisationID")->equals()->variable($organisationID);
         $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         if($result->num_rows != 0)
         {
@@ -108,11 +109,11 @@ class OrganisationModel extends BaseDatabaseModel implements BaseModelInterface
         }
 
 
-        $stmt = (new \OpenPOS\Common\SQLQuery())->insertInto("organisations", ["organisationName", "organisationID", "stripeAccountID"], [$name, $organisationID, $stripeAccount]);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->insertInto("organisations", ["name", "organisationID", "stripeAccountID"], [$name, $organisationID, $stripeAccount]);
         $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         if(!$result)
-        {return
-            throw new OpenPOSException("Failed to create new Organisation!", "UserModel", "create_fail", "internal_error");
+        {
+            throw new OpenPOSException("Failed to create new Organisation!", "OrganisationModel", "create_fail", "internal_error");
         }
 
 

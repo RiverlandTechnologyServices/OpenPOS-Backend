@@ -43,12 +43,12 @@ class UsersModel extends BaseDatabaseModel implements BaseModelInterface
     public static function Find(string $userName = "", string $organisationID = "", string $roleID = "", string $globalRoleID = "", bool $enabled = true, string $searchTerm = ""): UsersModel
     {
         $users = new UsersModel();
-        $stmt = (new \SQLQuery())->select(["id"])->from("users")->where()->variableName("userName")->like("%")->variable($userName)->variable($searchTerm)->string("%")->or()->variableName("organisationID")->like("%")->variable($organisationID)->variable($searchTerm)->string("%")->or()->variableName("roleID")->like("%")->variable($roleID)->variable($searchTerm)->string("%")->or()->variableName("globalRoleID")->like("%")->variable($globalRoleID)->variable($searchTerm)->string("%")->or()->variableName("enabled")->equals()->variable($enabled);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("users")->where()->variableName("userName")->like("%")->variable($userName)->variable($searchTerm)->string("%")->or()->variableName("organisationID")->like("%")->variable($organisationID)->variable($searchTerm)->string("%")->or()->variableName("roleID")->like("%")->variable($roleID)->variable($searchTerm)->string("%")->or()->variableName("globalRoleID")->like("%")->variable($globalRoleID)->variable($searchTerm)->string("%")->or()->variableName("enabled")->equals()->variable($enabled);
 
-        $results = \DatabaseManager::getInstance()->execute($stmt);
+        $results = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc();
         foreach ($results as $result) {
             try {
-                $users->users[] = new UserSummaryModel($result["id"]);
+                $users->users[] = UserSummaryModel::Find($result["id"]);
             } catch (OpenPOSException $e) {
                 throw new OpenPOSException("Empty ID returned from SQL query.", "UsersModel","empty_result", "internal_error");
             }

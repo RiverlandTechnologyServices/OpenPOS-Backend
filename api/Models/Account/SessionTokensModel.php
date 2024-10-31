@@ -46,11 +46,11 @@ class SessionTokensModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("No RoleModel ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
         }
         $sessionTokens = new SessionTokensModel();
-        $stmt = (new \SQLQuery())->select(["id"])->from("sessionTokens")->where()->variableName("userID")->equals()->variable($userID);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("sessionTokens")->where()->variableName("userID")->equals()->variable($userID);
 
-        $results = \DatabaseManager::getInstance()->execute($stmt);
+        $results = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         $sessionTokens->sessionTokens = array();
-        foreach ($results as $result) {
+        foreach ($results->fetch_assoc() as $result) {
             $sessionTokens->sessionTokens[] = $result["id"];
         }
         return $sessionTokens;
