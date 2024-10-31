@@ -9,6 +9,8 @@ use OpenPOS\Common\OpenPOSException;
  * @copyright 2024 Riverland Technology Services/OpenPOS
  */
 
+namespace OpenPOS\Common;
+
 class SQLQuery
 {
     protected string $stmt = "";

@@ -7,7 +7,7 @@
 
 namespace OpenPOS\Models\Account;
 
-use DatabaseManager;
+use \OpenPOS\Common\DatabaseManager;
 use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseDatabaseModel;
 use OpenPOS\Models\BaseModelInterface;
@@ -146,16 +146,16 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
         $requestedUser = new UserModel();
         if($id)
         {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
         }
         else if($email)
         {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("email")->equals()->variable($email);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "userName", "email", "password", "sessionTokens", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("email")->equals()->variable($email);
         }
         else if($sessionToken)
         {
             $sessionTokenObject = SessionTokenModel::Find("", $sessionToken);
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "password", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($sessionTokenObject->getUserID());
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "userName", "email", "password", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($sessionTokenObject->getUserID());
         }
         else
         {
@@ -164,7 +164,7 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
 
         //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
 
-        if($data = \DatabaseManager::getInstance()->execute($stmt)[0])
+        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)[0])
         {
             $requestedUser->id = $data["id"];
             $requestedUser->userName = $data["userName"];
@@ -193,15 +193,15 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("Failed to provide UserName, Email, Password, OrganisationID, RoleID, or GlobalRoleID", "UserModel", "insufficient_inputs", "insufficient_inputs");
         }
 
-        $stmt = (new \SQLQuery())->select(["id"])->from("users")->where()->variableName("email")->equals()->variable($email);
-        $result = DatabaseManager::getInstance()->execute($stmt);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("users")->where()->variableName("email")->equals()->variable($email);
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         if($result->num_rows != 0)
         {
             throw new OpenPOSException("User already exists", "UserModel", "user_already_exists", "user_already_exists");
         }
 
-        $stmt = (new \SQLQuery())->insertInto("users", ["userName", "email", "password", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"], [$userName, $email, password_hash($password, PASSWORD_DEFAULT), $roleID, $globalRoleID, $enabled, UserSettingsModel::Create()->toJson(), $organisationID]);
-        $result = \DatabaseManager::getInstance()->execute($stmt);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->insertInto("users", ["userName", "email", "password", "roleID", "globalRoleID", "enabled", "userSettings", "organisationID"], [$userName, $email, password_hash($password, PASSWORD_DEFAULT), $roleID, $globalRoleID, $enabled, UserSettingsModel::Create()->toJson(), $organisationID]);
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         if(!$result)
         {
             throw new OpenPOSException("Failed to create new user!", "UserModel", "create_fail", "internal_error");

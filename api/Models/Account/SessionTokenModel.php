@@ -10,17 +10,36 @@ namespace OpenPOS\Models\Account;
 use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseDatabaseModel;
 use OpenPOS\Models\BaseModelInterface;
-use OpenPOS\Models\Random;
 use OpenPOS\Models\TimeModel;
 
 class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
 {
 
     protected string $id;
+    public function getID(): string
+    {
+        return $this->id;
+    }
     protected string $token;
+    public function getToken(): string
+    {
+        return $this->token;
+    }
     protected string $userID;
+    public function getUserID(): string
+    {
+        return $this->userID;
+    }
     protected bool $active;
+    public function getActive(): bool
+    {
+        return $this->active;
+    }
     protected TimeModel $timeCreated;
+    public function getTimeCreated(): TimeModel
+    {
+        return $this->timeCreated;
+    }
 
     public function __construct()
     {
@@ -51,18 +70,18 @@ class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
     {
         if($id)
         {
-            $stmt = (new \SQLQuery())->select(["id", "token", "active", "timeCreated"])->from("sessionTokens")->where()->variableName("id")->equals()->variable($id);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "token", "active", "timeCreated"])->from("sessionTokens")->where()->variableName("id")->equals()->variable($id);
         }
         else if($token)
         {
-            $stmt = (new \SQLQuery())->select(["id", "token", "active", "timeCreated"])->from("sessionTokens")->where()->variableName("token")->equals()->variable($token);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "token", "active", "timeCreated"])->from("sessionTokens")->where()->variableName("token")->equals()->variable($token);
         }
         else
         {
             throw new OpenPOSException("No Session ID or Token provided", "SessionTokenModel", "insufficient_input", "insufficient_input");
         }
         $sessionToken = new SessionTokenModel();
-        $result = \DatabaseManager::getInstance()->execute($stmt)[0];
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)[0];
 
         $sessionToken->id = $result["id"];
         $sessionToken->token = $result["token"];
@@ -88,10 +107,10 @@ class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
             $user = UserModel::Find("", $email);
             if(password_verify($password, $user->getPassword()))
             {
-                $randomiser = new \Random\Randomizer(new Random\Engine\Secure());
+                $randomiser = new \Random\Randomizer(new \Random\Engine\Secure());
                 $sessionToken = $randomiser->getBytesFromString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#%^&*()_+-=", 128);
-                $stmt = (new \SQLQuery())->insertInto("sessionTokens", ["userID", "token", "active", "timeCreated"], [$user->getID(), $sessionToken, true, time()]);
-                $result = \DatabaseManager::getInstance()->execute($stmt);
+                $stmt = (new \OpenPOS\Common\SQLQuery())->insertInto("sessionTokens", ["userID", "token", "active", "timeCreated"], [$user->getID(), $sessionToken, true, time()]);
+                $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
                 if(!$result)
                 {
                     throw new OpenPOSException("Failed to create new session!", "SessionTokenModel", "create_fail", "internal_error");

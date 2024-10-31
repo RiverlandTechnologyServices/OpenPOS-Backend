@@ -14,4 +14,6 @@ $router->RegisterRoute("api/v1/user", new \OpenPOS\Controllers\UserController())
 $router->RegisterRoute("api/v1/sessionTokens", new \OpenPOS\Controllers\SessionTokensController());
 $router->RegisterRoute("api/v1/sessionToken/{sessionToken}", new \OpenPOS\Controllers\SessionTokenController());
 $router->RegisterRoute("api/v1/sessionToken", new \OpenPOS\Controllers\SessionTokenController());
+$router->RegisterRoute("api/v1/organisation/{organisationID}", new \OpenPOS\Controllers\OrganisationController());
+$router->RegisterRoute("api/v1/organisation", new \OpenPOS\Controllers\OrganisationController());
 $router->Route($_SERVER["REQUEST_URI"]);
