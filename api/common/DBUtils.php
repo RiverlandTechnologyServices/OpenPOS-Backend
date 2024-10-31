@@ -1,8 +1,4 @@
 <?php
-
-use OpenPOS\Common\Logger;
-use OpenPOS\Common\OpenPOSException;
-
 /**
  *  Helper utilities for interacting with databases
  * @name DBUtils.php
