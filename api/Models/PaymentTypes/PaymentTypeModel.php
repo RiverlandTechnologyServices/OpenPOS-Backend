@@ -73,14 +73,14 @@ class PaymentTypeModel extends BaseDatabaseModel implements BaseModelInterface
         $paymentType = new self();
         if($id)
         {
-            $stmt = (new \SQLQuery())->select(["id", "name", "readableName", "organisationId", "locationId", "paymentType", "paymentTypeSettings"])->from("paymentTypes")->where()->variableName("id")->equals()->variable($id);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "name", "readableName", "organisationId", "locationId", "paymentType", "paymentTypeSettings"])->from("paymentTypes")->where()->variableName("id")->equals()->variable($id);
         }
         else
         {
             throw new OpenPOSException("Failed to provide ID", "PaymentTypeModel", "insufficient_inputs", "insufficient_inputs");
         }
 
-        if($data = \DatabaseManager::getInstance()->execute($stmt)[0])
+        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc()[0])
         {
             $paymentType->id = $data["id"];
             $paymentType->name = $data["name"];

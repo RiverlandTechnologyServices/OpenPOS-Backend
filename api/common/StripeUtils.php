@@ -13,7 +13,7 @@ class StripeUtils
 
     public static function GetInstance(): self
     {
-        if(self::$instance == null)
+        if(!isset(self::$instance))
         {
             self::$instance = new self();
         }

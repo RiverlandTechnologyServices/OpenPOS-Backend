@@ -44,9 +44,9 @@ class UserSettingsModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("No RoleModel ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
         }
         $userSettings = new UserSettingsModel();
-        $stmt = (new \SQLQuery())->select(["userSettings"])->from("users")->where()->variableName("id")->equals()->variable($userID);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["userSettings"])->from("users")->where()->variableName("id")->equals()->variable($userID);
 
-        $result = json_decode(\DatabaseManager::getInstance()->execute($stmt)[0]);
+        $result = json_decode(\OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc()[0]);
         foreach ($result as $setting => $value) {
             $userSettings->{$setting} = $value;
         }

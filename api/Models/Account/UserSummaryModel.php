@@ -111,15 +111,15 @@ class UserSummaryModel extends BaseDatabaseModel implements BaseModelInterface
         $requestedUser = new UserSummaryModel();
         if($id)
         {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("id")->equals()->variable($id);
         }
         else if($email)
         {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("email")->equals()->variable($email);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("email")->equals()->variable($email);
         }
         else if($sessionToken)
         {
-            $stmt = (new \SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("sessionToken")->equals()->variable($sessionToken);
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id", "userName", "email", "roleID", "globalRoleID", "enabled", "organisationID"])->from("users")->where()->variableName("sessionToken")->equals()->variable($sessionToken);
         }
         else
         {
@@ -127,7 +127,7 @@ class UserSummaryModel extends BaseDatabaseModel implements BaseModelInterface
         }
 
         //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
-        $data = \DatabaseManager::getInstance()->execute($stmt)[0];
+        $data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc()[0];
         $requestedUser->id = $data["id"];
         $requestedUser->userName = $data["userName"];
         $requestedUser->email = $data["email"];
