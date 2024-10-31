@@ -9,7 +9,7 @@
  * OpenPOS Configuration *
  *************************/
 
-const STRIPE_LIVE_KEY = "";
+define("STRIPE_LIVE_KEY", $_ENV["STRIPE_LIVE_KEY"]);
 
 
 /**************************
@@ -19,26 +19,19 @@ const STRIPE_LIVE_KEY = "";
  * Database Hostname
  * @type String
  */
-const DB_HOST = 'localhost';
+define("DB_HOST", 'db');
 /**
  * Database Username
  * @type string
  */
-const DB_USER = 'root';
+define("DB_USER", 'root');
 /**
  * Database Password
  * @type string
  */
-const DB_PASS = '';
+define("DB_PASS", $_ENV["MARIADB_ROOT_PASSWORD"]);
 /**
  * Database Name
  * @type string
  */
-const DB_NAME = 'openpos';
-/**
- * Database Charset
- * @type string
- */
-const DB_CHARSET = 'utf8';
-
-
+define("DB_NAME", 'openpos');

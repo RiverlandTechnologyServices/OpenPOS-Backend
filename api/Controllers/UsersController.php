@@ -12,8 +12,11 @@ class UsersController extends BaseController implements BaseControllerInterface
     public function get(array $args): void
     {
         parent::get($args);
-
         try {
+            if(!$this->sessionToken)
+            {
+                throw new \OpenPOS\Common\OpenPOSException("No session token provided", "UsersController", "insufficient_inputs", "insufficient_inputs");
+            }
             $sessionUser = \OpenPOS\Models\Account\UserSummaryModel::Find($this->sessionToken);
             $sessionPermissions = \OpenPOS\Models\Account\RoleModel::Find($sessionUser->getRoleID());
             $userName = $_GET["userName"] ?? "";
