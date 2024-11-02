@@ -45,7 +45,7 @@ class UsersModel extends BaseDatabaseModel implements BaseModelInterface
         $users = new UsersModel();
         $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("users")->where()->variableName("userName")->like("%")->variable($userName)->variable($searchTerm)->string("%")->or()->variableName("organisationID")->like("%")->variable($organisationID)->variable($searchTerm)->string("%")->or()->variableName("roleID")->like("%")->variable($roleID)->variable($searchTerm)->string("%")->or()->variableName("globalRoleID")->like("%")->variable($globalRoleID)->variable($searchTerm)->string("%")->or()->variableName("enabled")->equals()->variable($enabled);
 
-        $results = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc();
+        $results = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all();
         foreach ($results as $result) {
             try {
                 $users->users[] = UserSummaryModel::Find($result["id"]);

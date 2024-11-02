@@ -80,7 +80,7 @@ class PaymentTypeModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("Failed to provide ID", "PaymentTypeModel", "insufficient_inputs", "insufficient_inputs");
         }
 
-        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc()[0])
+        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0])
         {
             $paymentType->id = $data["id"];
             $paymentType->name = $data["name"];
@@ -102,6 +102,9 @@ class PaymentTypeModel extends BaseDatabaseModel implements BaseModelInterface
         throw new OpenPOSException("Cannot create a PaymentTypeModel", "PaymentTypeModel", "create_payment_type_error", "internal_error");
     }
 
+    /**
+     * @throws OpenPOSException
+     */
     public static function CreatePaymentType(string $name = "", string $readableName = "", string $organisationId = "", string $locationId = "", PaymentType $paymentType = PaymentType::Other, array $paymentTypeSettings = array()): self
     {
         if(!$name || !$readableName || !$organisationId || !$locationId || !$paymentType || !$paymentTypeSettings)
@@ -109,8 +112,8 @@ class PaymentTypeModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("Failed to provide all inputs", "PaymentTypeModel", "insufficient_inputs", "insufficient_inputs");
         }
 
-        $stmt = (new \SQLQuery())->select(["id"])->from("paymentTypes")->where()->variableName("name")->equals()->variable($name)->and()->variableName("organisationId")->equals()->variable($organisationId);
-        $result = \DatabaseManager::getInstance()->execute($stmt);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("paymentTypes")->where()->variableName("name")->equals()->variable($name)->and()->variableName("organisationId")->equals()->variable($organisationId);
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         if(!$result)
         {
             throw new OpenPOSException("Failed to check PaymentTypes!", "PaymentTypeModel", "lookup_failed", "internal_error");
@@ -122,15 +125,15 @@ class PaymentTypeModel extends BaseDatabaseModel implements BaseModelInterface
         }
 
 
-        $stmt = (new \SQLQuery())->insertInto("paymentTypes", ["name", "readableName", "organisationId", "locationId", "paymentType", "paymentTypeSettings"], [$name, $readableName, $organisationId, $locationId, $paymentType, json_encode($paymentTypeSettings)]);
-        $result = \DatabaseManager::getInstance()->execute($stmt);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->insertInto("paymentTypes", ["name", "readableName", "organisationId", "locationId", "paymentType", "paymentTypeSettings"], [$name, $readableName, $organisationId, $locationId, $paymentType, json_encode($paymentTypeSettings)]);
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         if(!$result)
         {
             throw new OpenPOSException("Failed to create new PaymentType!", "PaymentTypeModel", "create_fail", "internal_error");
         }
 
-        $stmt = (new \SQLQuery())->select(["id"])->from("paymentTypes")->where()->variableName("name")->equals()->variable($name)->and()->variableName("organisationId")->equals()->variable($organisationId);
-        $result = \DatabaseManager::getInstance()->execute($stmt);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("paymentTypes")->where()->variableName("name")->equals()->variable($name)->and()->variableName("organisationId")->equals()->variable($organisationId);
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         if(!$result)
         {
             throw new OpenPOSException("Failed to create new PaymentType!", "PaymentTypeModel", "create_fail", "internal_error");
