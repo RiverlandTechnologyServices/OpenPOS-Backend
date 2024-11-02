@@ -116,7 +116,7 @@ class RoleModel extends BaseDatabaseModel implements BaseModelInterface
 
         $permissions = new RoleModel();
         $stmt = (new \OpenPOS\Common\SQLQuery())->select(["*"])->from("roles")->where()->variableName("roleID")->equals()->variable($roleID);
-        $result = DatabaseManager::getInstance()->execute($stmt)->fetch_assoc()[0];
+        $result = DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0];
         $permissions->id = $result["id"];
         $permissions->name = $result["name"];
         $permissions->organisationID = $result["organisationID"];

@@ -46,7 +46,7 @@ class UserSettingsModel extends BaseDatabaseModel implements BaseModelInterface
         $userSettings = new UserSettingsModel();
         $stmt = (new \OpenPOS\Common\SQLQuery())->select(["userSettings"])->from("users")->where()->variableName("id")->equals()->variable($userID);
 
-        $result = json_decode(\OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_assoc()[0]);
+        $result = json_decode(\OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0]);
         foreach ($result as $setting => $value) {
             $userSettings->{$setting} = $value;
         }
@@ -58,6 +58,8 @@ class UserSettingsModel extends BaseDatabaseModel implements BaseModelInterface
      */
     public static function Create(): UserSettingsModel
     {
-        // TODO: Implement Create() method.
+        $newSettings = new UserSettingsModel();
+        $newSettings->timezone = "Australia/Sydney";
+        return $newSettings;
     }
 }
