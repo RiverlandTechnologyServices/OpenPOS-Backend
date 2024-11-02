@@ -7,6 +7,7 @@
 
 namespace OpenPOS\Models\Account;
 
+use Couchbase\Role;
 use OpenPOS\Common\DatabaseManager;
 use OpenPOS\Common\OpenPOSException;
 use OpenPOS\Models\BaseDatabaseModel;
@@ -107,21 +108,29 @@ class RoleModel extends BaseDatabaseModel implements BaseModelInterface
      * @return RoleModel
      * @throws OpenPOSException
      */
-    public static function Find(string $roleID = ""): RoleModel
+    public static function Find(string $roleID = "", string $name = "", string $organisationID = ""): RoleModel
     {
-        if(!$roleID)
+        if(!$roleID || (!$name && !$organisationID))
         {
             throw new OpenPOSException("No Role ID provided", "PermissionsModel", "insufficient_input", "insufficient_input");
         }
 
+        if($roleID)
+        {
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["*"])->from("roles")->where()->variableName("roleID")->equals()->variable($roleID);
+        }
+        if($name && $organisationID)
+        {
+            $stmt = (new \OpenPOS\Common\SQLQuery())->select(["*"])->from("roles")->where()->variableName("name")->equals()->variable($name)->and()->variableName("organisationID")->equals()->variable($organisationID)->equals()->variable($organisationID);
+        }
+
         $permissions = new RoleModel();
-        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["*"])->from("roles")->where()->variableName("roleID")->equals()->variable($roleID);
-        $result = DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0];
+        $result = DatabaseManager::getInstance()->execute($stmt)->fetch_all(MYSQLI_ASSOC)[0];
         $permissions->id = $result["id"];
         $permissions->name = $result["name"];
         $permissions->organisationID = $result["organisationID"];
-
         $permissions->users = $result["users"];
+        $permissions->paymentTypes = $result["paymentTypes"];
         return $permissions;
     }
 
@@ -140,10 +149,8 @@ class RoleModel extends BaseDatabaseModel implements BaseModelInterface
 
         $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("roles")->where()->variableName("roleName")->equals()->variable($name)->and()->variableName("organisationID")->equals()->variable($organisationID);
 
-        $stmt = (new \OpenPOS\Common\SQLQuery())->insertInto("roles", ["name", "organisationID", "users", "paymentTypes"], [$name, $organisationID, $users, $paymentTypes]);
+        $stmt = (new \OpenPOS\Common\SQLQuery())->insertInto("roles", ["name", "organisationID", "users", "paymentTypes"], [$name, $organisationID, $users->value, $paymentTypes->value]);
         \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
-        $permissions = new RoleModel();
-        $permissions->users = PermissionValues::NoAccess;
-        return $permissions;
+        return RoleModel::Find("", $name, $organisationID);
     }
 }

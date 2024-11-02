@@ -164,7 +164,7 @@ class UserModel extends BaseDatabaseModel implements BaseModelInterface
 
         //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
 
-        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0])
+        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all(MYSQLI_ASSOC)[0])
         {
             $requestedUser->id = $data["id"];
             $requestedUser->userName = $data["userName"];

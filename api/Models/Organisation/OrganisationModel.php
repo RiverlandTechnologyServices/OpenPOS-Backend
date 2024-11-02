@@ -54,7 +54,7 @@ class OrganisationModel extends BaseDatabaseModel implements BaseModelInterface
 
         //$data = ($this->execute("SELECT userName, email, sessionTokens, role, globalRole, enabled, userSettings, organisationID FROM users WHERE id = ?", [$id]))[0];
 
-        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0])
+        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all(MYSQLI_ASSOC)[0])
         {
             $requestedOrganisation->id = $data["id"];
             $requestedOrganisation->organisationID = $data["organisationID"];
@@ -73,6 +73,20 @@ class OrganisationModel extends BaseDatabaseModel implements BaseModelInterface
      */
     public static function Create($name = "", $organisationID = "", $userName = "", $email = "", $password = ""): UserModel
     {
+        if(!$name)
+        {
+            throw new OpenPOSException("Failed to provide Organisation Name", "OrganisationModel", "insufficient_inputs", "insufficient_inputs");
+        }
+
+
+
+        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("organisations")->where()->variableName("organisationID")->equals()->variable($organisationID);
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
+        if($result->num_rows != 0)
+        {
+            throw new OpenPOSException("Organisation already exists", "OrganisationModel", "organisation_already_exists", "organisation_already_exists");
+        }
+
         $stripeAccount = "";
         try {
             $account = \OpenPOS\Common\StripeUtils::GetInstance()->getClient()->accounts->create([
@@ -92,20 +106,6 @@ class OrganisationModel extends BaseDatabaseModel implements BaseModelInterface
         catch (\Exception $e)
         {
             throw new OpenPOSException($e->getMessage(), "OrganisationModel", $e->getCode(), "internal_error");
-        }
-
-        if(!$name)
-        {
-            throw new OpenPOSException("Failed to provide Organisation Name", "OrganisationModel", "insufficient_inputs", "insufficient_inputs");
-        }
-
-
-
-        $stmt = (new \OpenPOS\Common\SQLQuery())->select(["id"])->from("organisations")->where()->variableName("organisationID")->equals()->variable($organisationID);
-        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
-        if($result->num_rows != 0)
-        {
-            throw new OpenPOSException("Organisation already exists", "OrganisationModel", "organisation_already_exists", "organisation_already_exists");
         }
 
 

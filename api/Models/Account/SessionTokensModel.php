@@ -50,7 +50,7 @@ class SessionTokensModel extends BaseDatabaseModel implements BaseModelInterface
 
         $results = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt);
         $sessionTokens->sessionTokens = array();
-        foreach ($results->fetch_all() as $result) {
+        foreach ($results->fetch_all(MYSQLI_ASSOC) as $result) {
             $sessionTokens->sessionTokens[] = $result["id"];
         }
         return $sessionTokens;
