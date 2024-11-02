@@ -81,7 +81,7 @@ class SessionTokenModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("No Session ID or Token provided", "SessionTokenModel", "insufficient_input", "insufficient_input");
         }
         $sessionToken = new SessionTokenModel();
-        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0];
+        $result = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all(MYSQLI_ASSOC)[0];
 
         $sessionToken->id = $result["id"];
         $sessionToken->token = $result["token"];

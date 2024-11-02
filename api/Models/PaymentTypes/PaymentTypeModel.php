@@ -80,7 +80,7 @@ class PaymentTypeModel extends BaseDatabaseModel implements BaseModelInterface
             throw new OpenPOSException("Failed to provide ID", "PaymentTypeModel", "insufficient_inputs", "insufficient_inputs");
         }
 
-        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all()[0])
+        if($data = \OpenPOS\Common\DatabaseManager::getInstance()->execute($stmt)->fetch_all(MYSQLI_ASSOC)[0])
         {
             $paymentType->id = $data["id"];
             $paymentType->name = $data["name"];
